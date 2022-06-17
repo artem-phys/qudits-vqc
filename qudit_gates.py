@@ -1,31 +1,31 @@
-import numpy as np
-import scipy
-from scipy import stats, linalg
-
+import sympy as sp
+import scipy.stats
 import cirq
+
+from sympy.physics.quantum import TensorProduct
 
 
 def generalized_sigma(index, i, j, dimension=4):
     """Generalized sigma matrix for qudit gates implementation"""
 
-    sigma = np.zeros((dimension, dimension), dtype=np.cfloat)
+    sigma = sp.zeros(dimension, dimension)
 
     if index == 0:
         # identity matrix elements
-        sigma[i][i] = 1
-        sigma[j][j] = 1
+        sigma[i, i] = 1
+        sigma[j, j] = 1
     elif index == 1:
         # sigma_x matrix elements
-        sigma[i][j] = 1
-        sigma[j][i] = 1
+        sigma[i, j] = 1
+        sigma[j, i] = 1
     elif index == 2:
         # sigma_y matrix elements
-        sigma[i][j] = -1j
-        sigma[j][i] = 1j
+        sigma[i, j] = -1j
+        sigma[j, i] = 1j
     elif index == 3:
         # sigma_z matrix elements
-        sigma[i][i] = 1
-        sigma[j][j] = -1
+        sigma[i, i] = 1
+        sigma[j, j] = -1
 
     return sigma
 
@@ -69,10 +69,10 @@ class QuditRGate(QuditGate):
         sigma_x = generalized_sigma(1, self.l1, self.l2, dimension=self.d)
         sigma_y = generalized_sigma(2, self.l1, self.l2, dimension=self.d)
 
-        s = np.sin(self.phi)
-        c = np.cos(self.phi)
+        s = sp.sin(self.phi)
+        c = sp.cos(self.phi)
 
-        u = scipy.linalg.expm(-1j * self.theta / 2 * (c * sigma_x + s * sigma_y))
+        u = sp.exp(-1j * self.theta / 2 * (c * sigma_x + s * sigma_y))
 
         return u
 
@@ -80,7 +80,7 @@ class QuditRGate(QuditGate):
         self.symbol = 'R'
         SUB = str.maketrans("0123456789", "₀₁₂₃₄₅₆₇₈₉")
         SUP = str.maketrans("0123456789", "⁰¹²³⁴⁵⁶⁷⁸⁹")
-        return f'{self.symbol}{str(self.l1).translate(SUB)}{str(self.l2).translate(SUP)}' + f'({self.theta:.2f}, {self.phi:.2f})'
+        return f'{self.symbol}{str(self.l1).translate(SUB)}{str(self.l2).translate(SUP)}' + f'({self.theta}, {self.phi})'
 
 
 class QuditXXGate(QuditGate):
@@ -95,7 +95,7 @@ class QuditXXGate(QuditGate):
 
     def _unitary_(self):
         sigma_x = generalized_sigma(1, self.l1, self.l2, dimension=self.d)
-        u = scipy.linalg.expm(-1j * self.theta / 2 * np.kron(sigma_x, sigma_x))
+        u = sp.exp(-1j * self.theta / 2 * TensorProduct(sigma_x, sigma_x))
 
         return u
 
@@ -104,7 +104,7 @@ class QuditXXGate(QuditGate):
         SUB = str.maketrans("0123456789", "₀₁₂₃₄₅₆₇₈₉")
         SUP = str.maketrans("0123456789", "⁰¹²³⁴⁵⁶⁷⁸⁹")
         info = f'{self.symbol}{str(self.l1).translate(SUB)}{str(self.l2).translate(SUP)}'.translate(
-            SUB) + f'({self.theta:.2f})'
+            SUB) + f'({self.theta})'
         return info, info
 
 
@@ -116,7 +116,7 @@ class QuditBarrier(QuditGate):
         self.symbol = '|'
 
     def _unitary_(self):
-        return np.identity(self.d * self.d, dtype=np.cfloat)
+        return sp.eye(self.d * self.d)
 
 
 class QuditArbitraryUnitary(QuditGate):
@@ -124,7 +124,7 @@ class QuditArbitraryUnitary(QuditGate):
 
     def __init__(self, dimension=4, num_qudits=2):
         super().__init__(dimension=dimension, num_qubits=num_qudits)
-        self.unitary = scipy.stats.unitary_group.rvs(self.d ** self.n)
+        self.unitary = sp.Matrix(scipy.stats.unitary_group.rvs(self.d ** self.n))
         self.symbol = 'U'
 
     def _unitary_(self):
@@ -137,13 +137,16 @@ if __name__ == '__main__':
 
     qudits = cirq.LineQid.range(n, dimension=d)
 
+    alpha = sp.Symbol('alpha')
+    beta = sp.Symbol('beta')
+
     print('Qudit R Gate')
-    circuit = cirq.Circuit(QuditRGate(0, 1, 0.2, 0.5, dimension=d).on(qudits[0]))
+    circuit = cirq.Circuit(QuditRGate(0, 1, alpha, beta, dimension=d).on(qudits[0]))
     print(circuit)
     print()
 
     print('Qudit XX Gate')
-    circuit = cirq.Circuit(QuditXXGate(0, 2, 0.32, dimension=d).on(*qudits[:2]))
+    circuit = cirq.Circuit(QuditXXGate(0, 2, beta, dimension=d).on(*qudits[:2]))
     print(circuit)
     print()
 
