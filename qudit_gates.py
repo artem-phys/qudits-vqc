@@ -5,6 +5,23 @@ import cirq
 from sympy.physics.quantum import TensorProduct
 
 
+def nice_repr(parameter):
+    """Nice parameter representation
+        SymPy symbol - as is
+        float number - 3 digits after comma
+    """
+    if isinstance(parameter, float):
+        return f'{parameter:.3f}'
+    else:
+        return f'{parameter}'
+
+
+def levels_connectivity_check(l1, l2):
+    """Check ion layers connectivity for gates"""
+    connected_layers_list = [{0, i} for i in range(max(l1, l2) + 1)]
+    assert {l1, l2} in connected_layers_list, "Layers are not connected"
+
+
 def generalized_sigma(index, i, j, dimension=4):
     """Generalized sigma matrix for qudit gates implementation"""
 
@@ -28,12 +45,6 @@ def generalized_sigma(index, i, j, dimension=4):
         sigma[j, j] = -1
 
     return sigma
-
-
-def levels_connectivity_check(l1, l2):
-    """Check ion layers connectivity for gates"""
-    connected_layers_list = [{0, i} for i in range(max(l1, l2) + 1)]
-    assert {l1, l2} in connected_layers_list, "Layers are not connected"
 
 
 class QuditGate(cirq.Gate):
@@ -80,7 +91,7 @@ class QuditRGate(QuditGate):
         self.symbol = 'R'
         SUB = str.maketrans("0123456789", "₀₁₂₃₄₅₆₇₈₉")
         SUP = str.maketrans("0123456789", "⁰¹²³⁴⁵⁶⁷⁸⁹")
-        return f'{self.symbol}{str(self.l1).translate(SUB)}{str(self.l2).translate(SUP)}' + f'({self.theta}, {self.phi})'
+        return f'{self.symbol}{str(self.l1).translate(SUB)}{str(self.l2).translate(SUP)}' + f'({nice_repr(self.theta)}, {nice_repr(self.phi)})'
 
 
 class QuditXXGate(QuditGate):
@@ -104,7 +115,7 @@ class QuditXXGate(QuditGate):
         SUB = str.maketrans("0123456789", "₀₁₂₃₄₅₆₇₈₉")
         SUP = str.maketrans("0123456789", "⁰¹²³⁴⁵⁶⁷⁸⁹")
         info = f'{self.symbol}{str(self.l1).translate(SUB)}{str(self.l2).translate(SUP)}'.translate(
-            SUB) + f'({self.theta})'
+            SUB) + f'({nice_repr(self.theta)})'
         return info, info
 
 
