@@ -5,7 +5,7 @@ from qudit_gates import *
 
 
 def rot_layer(qudits_, l1, l2, theta_array, phi_array, with_noise=False):
-    """Yields parametrized single qudit rotation"""
+    """Yields parametrized single qudit rotations"""
     for i, qid in enumerate(qudits_):
         rot = QuditRGate(l1, l2, theta_array[i], phi_array[i])
         yield rot.on(cirq.LineQid(i, dimension=4))
@@ -13,9 +13,9 @@ def rot_layer(qudits_, l1, l2, theta_array, phi_array, with_noise=False):
             yield QuquartDepolarizingChannel().on(qid)
 
 
-def rot_xx_layer(qudits_, theta, with_noise=False):
-    """Yields parametrized single qudit rotation"""
-    mix_gate = QuditXXGate(0, 1, theta)
+def rot_zz_layer(qudits_, theta, with_noise=False):
+    """Yields parametrized two qudit rotation"""
+    mix_gate = QuditZZGate(0, 1, theta)
     for i in range(len(qudits_)):
         for j in range(i + 1, len(qudits_)):
             yield mix_gate.on(qudits_[i], qudits_[j])
@@ -24,11 +24,11 @@ def rot_xx_layer(qudits_, theta, with_noise=False):
 
 
 def one_step(qudits_, theta_lists, phi_lists, two_qudit_theta, with_noise=False):
-
+    """One variational step"""
     for l2 in 1, 2, 3:
         yield rot_layer(qudits_, 0, l2, theta_lists[l2 - 1], phi_lists[l2 - 1], with_noise=with_noise)
 
-    yield rot_xx_layer(qudits_, two_qudit_theta[0], with_noise=with_noise)
+    yield rot_zz_layer(qudits_, two_qudit_theta[0], with_noise=with_noise)
 
     yield QuditBarrier(num_qudits=len(qudits_)).on(*qudits_)
 
