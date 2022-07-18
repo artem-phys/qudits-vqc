@@ -154,7 +154,7 @@ class QuditZZGate(QuditGate):
         return self.__class__(self.l1, self.l2, resolver.value_of(self.theta, recursive), dimension=self.d)
 
     def _circuit_diagram_info_(self, args):
-        self.symbol = 'XX'
+        self.symbol = 'ZZ'
         SUB = str.maketrans("0123456789", "₀₁₂₃₄₅₆₇₈₉")
         SUP = str.maketrans("0123456789", "⁰¹²³⁴⁵⁶⁷⁸⁹")
         info = f'{self.symbol}{str(self.l1).translate(SUB)}{str(self.l2).translate(SUP)}'.translate(
