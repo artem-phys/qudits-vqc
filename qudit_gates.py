@@ -19,7 +19,7 @@ def nice_repr(parameter):
 def levels_connectivity_check(l1, l2):
     """Check ion layers connectivity for gates"""
     connected_layers_list = [{0, i} for i in range(max(l1, l2) + 1)]
-    assert {l1, l2} in connected_layers_list, "Layers are not connected"
+    # assert {l1, l2} in connected_layers_list, "Layers are not connected"
 
 
 def generalized_sigma(index, i, j, dimension=4):
@@ -203,6 +203,13 @@ if __name__ == '__main__':
 
     print('Qudit XX Gate')
     circuit = cirq.Circuit(QuditXXGate(0, 2, beta, dimension=d).on(*qudits[:2]))
+    param_resolver = cirq.ParamResolver({'alpha': 0.2, 'beta': 0.3})
+    resolved_circuit = cirq.resolve_parameters(circuit, param_resolver)
+    print(resolved_circuit)
+    print()
+
+    print('Qudit ZZ Gate')
+    circuit = cirq.Circuit(QuditZZGate(0, 2, beta, dimension=d).on(*qudits[:2]))
     param_resolver = cirq.ParamResolver({'alpha': 0.2, 'beta': 0.3})
     resolved_circuit = cirq.resolve_parameters(circuit, param_resolver)
     print(resolved_circuit)

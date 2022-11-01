@@ -51,9 +51,9 @@ class DoubleQuquartDepolarizingChannel(QuditGate):
                 for i2 in range(self.d):
                     for i3 in range(self.d):
                         op = np.kron(np.kron(generalized_sigma(i0, 0, 1, dimension=2),
-                                                         generalized_sigma(i1, 0, 1, dimension=2)),
-                                           np.kron(generalized_sigma(i2, 0, 1, dimension=2),
-                                                         generalized_sigma(i3, 0, 1, dimension=2)))
+                                             generalized_sigma(i1, 0, 1, dimension=2)),
+                                     np.kron(generalized_sigma(i2, 0, 1, dimension=2),
+                                             generalized_sigma(i3, 0, 1, dimension=2)))
                         ps.append(op)
         return tuple(zip(self.p_matrix.flatten(), ps))
 

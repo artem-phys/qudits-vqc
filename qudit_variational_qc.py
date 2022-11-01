@@ -1,5 +1,3 @@
-import numpy as np
-
 from qudit_depolarization_channels import *
 from qudit_gates import *
 

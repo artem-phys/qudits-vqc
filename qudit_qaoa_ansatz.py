@@ -1,4 +1,4 @@
-import numpy as np
+import sympy as sp
 
 from qudit_depolarization_channels import *
 from qudit_gates import *
