@@ -46,6 +46,14 @@ def variational_qc(tl_, pl_, tqtl_, num_layers_, num_qudits_, measurement=False,
     return qc
 
 
+def qudit_parameters_reshape(params):
+    tl = [params[:num_qudits * 3].reshape((3, num_qudits))]
+    pl = [params[num_qudits * 3:2 * num_qudits * 3].reshape((3, num_qudits))]
+    tqtl = [params[2 * num_qudits * 3:]]
+
+    return tl, pl, tqtl
+
+
 if __name__ == '__main__':
     num_layers = 1  # number of variational layers
     num_qudits = 4
