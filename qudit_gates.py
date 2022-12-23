@@ -19,7 +19,7 @@ def nice_repr(parameter):
 def levels_connectivity_check(l1, l2):
     """Check ion layers connectivity for gates"""
     connected_layers_list = [{0, i} for i in range(max(l1, l2) + 1)]
-    # assert {l1, l2} in connected_layers_list, "Layers are not connected"
+    assert {l1, l2} in connected_layers_list, "Layers are not connected"
 
 
 def generalized_sigma(index, i, j, dimension=4):

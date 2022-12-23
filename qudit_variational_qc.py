@@ -31,14 +31,14 @@ def one_step(qudits_, theta_lists, phi_lists, two_qudit_theta, with_noise=False)
     yield QuditBarrier(num_qudits=len(qudits_)).on(*qudits_)
 
 
-def variational_qc(tl_, pl_, tqtl_, num_layers_, num_qudits_, measurement=False, with_noise=False):
+def variational_qc(tl, pl, tqtl, num_layers_, num_qudits_, measurement=False, with_noise=False):
 
     # two_qudits
     qudits_ = cirq.LineQid.range(num_qudits_, dimension=4)
     qc = cirq.Circuit()
 
     for layer in range(num_layers_):
-        qc.append(one_step(qudits_, tl_[layer], pl_[layer], tqtl_[layer], with_noise=with_noise))
+        qc.append(one_step(qudits_, tl[layer], pl[layer], tqtl[layer], with_noise=with_noise))
 
     if measurement:
         qc.append(cirq.measure(*qudits_, key='qudits'))
@@ -55,15 +55,15 @@ def qudit_parameters_reshape(params):
 
 
 if __name__ == '__main__':
-    num_layers = 1  # number of variational layers
-    num_qudits = 4
+    num_layers = 1
+    num_qudits = 2
     num_qudits_pairs = int((num_qudits + 1) * num_qudits / 2)
 
-    tl = np.random.uniform(low=0, high=2 * np.pi, size=(num_layers, 3, num_qudits))
-    pl = np.random.uniform(low=0, high=2 * np.pi, size=(num_layers, 3, num_qudits))
-    tqtl = np.random.uniform(low=0, high=2 * np.pi, size=(num_layers, num_qudits_pairs))
+    tl_ = np.random.uniform(low=0, high=2 * np.pi, size=(num_layers, 3, num_qudits))
+    pl_ = np.random.uniform(low=0, high=2 * np.pi, size=(num_layers, 3, num_qudits))
+    tqtl_ = np.random.uniform(low=0, high=2 * np.pi, size=(num_layers, num_qudits_pairs))
 
     print('Qudit Variational Ansatz')
-    vqc = variational_qc(tl, pl, tqtl, num_layers, num_qudits, measurement=True, with_noise=False)
+    vqc = variational_qc(tl_, pl_, tqtl_, num_layers, num_qudits, measurement=True, with_noise=False)
     print(vqc)
     print()
