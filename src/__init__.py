@@ -6,3 +6,5 @@ __all__ = [
     "qudit_gates",
     "qudit_variational_qc",
 ]
+
+__version__ = '1.0.0'

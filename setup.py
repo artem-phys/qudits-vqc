@@ -5,7 +5,7 @@ with open("README.md") as file:
 
 setuptools.setup(
     name="qudits_vqc",
-    version="1.0.0",
+    version="qudits_vqc.__version__",
     author="Artem Kuzmichev",
     author_email="artemkuzmichev.official@gmail.com",
     description="cirq extension with qudits",
