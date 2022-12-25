@@ -1,2 +1,5 @@
 .idea/
 *.pyc
+*.egg
+qudits_vqc.egg-info/
+src/qudits_vqc.egg-info/

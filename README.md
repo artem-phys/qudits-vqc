@@ -1,2 +1,2 @@
 # qudit-vqc
- Comprehensive analisys of qudits usage for variational quantum circuits
+ Comprehensive analysis of qudits usage for variational quantum circuits
