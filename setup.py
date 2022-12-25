@@ -4,8 +4,9 @@ with open("README.md") as file:
     read_me_description = file.read()
 
 setuptools.setup(
-    name="qudits-vqc",
-    version="1.0",
+    name="qudits_vqc",
+    version="1.0.0",
+    py_modules=['rpa']
     author="Artem Kuzmichev",
     author_email="artemkuzmichev.official@gmail.com",
     description="cirq extension with qudits",
