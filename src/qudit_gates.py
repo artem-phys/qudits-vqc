@@ -100,6 +100,26 @@ class QuditRGate(QuditGate):
         return f'{self.symbol}{str(self.l1).translate(SUB)}{str(self.l2).translate(SUP)}' + f'({nice_repr(self.theta)}, {nice_repr(self.phi)})'
 
 
+class QuditGeneralizedXGate(QuditGate):
+    """Generalized X Gate"""
+
+    def __init__(self, dimension=4):
+        super().__init__(dimension=dimension)
+
+    def _unitary_(self):
+        N = self.d
+        u = np.eye(N)
+
+        for i in range(N):
+            u[:][i] = np.eye(N)[:][(i + 1) % N]
+
+        return u
+
+    def _circuit_diagram_info_(self, args):
+        self.symbol = 'Xgen'
+        return self.symbol
+
+
 class QuditGeneralizedZGate(QuditGate):
     """Generalized Z Gate"""
 
@@ -211,9 +231,10 @@ if __name__ == '__main__':
     alpha = sympy.Symbol('alpha')
     beta = sympy.Symbol('beta')
 
+    param_resolver = cirq.ParamResolver({'alpha': 0.2, 'beta': 0.3})
+
     print('Qudit R Gate')
     circuit = cirq.Circuit(QuditRGate(0, 1, alpha, beta, dimension=d).on(qudits[0]))
-    param_resolver = cirq.ParamResolver({'alpha': 0.2, 'beta': 0.3})
     resolved_circuit = cirq.resolve_parameters(circuit, param_resolver)
     print(resolved_circuit)
     print()
@@ -221,20 +242,23 @@ if __name__ == '__main__':
     print('Qudit Generalized Z Gate')
     circuit = cirq.Circuit(QuditGeneralizedZGate(dimension=d).on(qudits[0]))
     param_resolver = cirq.ParamResolver({'alpha': 0.2, 'beta': 0.3})
+    print(resolved_circuit)
+    print()
+
+    print('Qudit Generalized X Gate')
+    circuit = cirq.Circuit(QuditGeneralizedXGate(dimension=d).on(qudits[0]))
     resolved_circuit = cirq.resolve_parameters(circuit, param_resolver)
     print(resolved_circuit)
     print()
 
     print('Qudit XX Gate')
     circuit = cirq.Circuit(QuditXXGate(0, 2, beta, dimension=d).on(*qudits[:2]))
-    param_resolver = cirq.ParamResolver({'alpha': 0.2, 'beta': 0.3})
     resolved_circuit = cirq.resolve_parameters(circuit, param_resolver)
     print(resolved_circuit)
     print()
 
     print('Qudit ZZ Gate')
     circuit = cirq.Circuit(QuditZZGate(0, 2, beta, dimension=d).on(*qudits[:2]))
-    param_resolver = cirq.ParamResolver({'alpha': 0.2, 'beta': 0.3})
     resolved_circuit = cirq.resolve_parameters(circuit, param_resolver)
     print(resolved_circuit)
     print()
