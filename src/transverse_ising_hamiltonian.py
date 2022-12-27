@@ -26,7 +26,7 @@ def objective_function(params, J, B, num_qids, dimension, sv, with_noise=False):
         vqe_circuit = variational_qc(tl, pl, tqtl, 1, num_qids, measurement=False, with_noise=with_noise)
 
     simulator = cirq.Simulator()
-    qubits = [cirq.LineQubit(i) for i in range(num_qids)]
+    qubits = [cirq.LineQubit(i) for i in range(int(np.ceil(dimension ** num_qids)))]
 
     # Simulate
     sv = simulator.simulate(vqe_circuit, initial_state=sv).final_state_vector
