@@ -45,7 +45,7 @@ def qubit_variational_qc(tl, pl, tqtl, num_layers_, num_qubits_, measurement=Fal
     return qc
 
 
-def qubit_parameters_reshape(params):
+def qubit_parameters_reshape(params, num_qubits=4):
     tl = np.array([params[:num_qubits]])
     pl = np.array([params[num_qubits: 2 * num_qubits]])
     tqtl = np.array([params[-1]])
