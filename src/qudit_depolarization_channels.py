@@ -1,7 +1,7 @@
 import numpy as np
 import cirq
 
-from qudit_gates import QuditGate, generalized_sigma, QuditGeneralizedXGate, QuditGeneralizedZGate
+from qudit_gates import QuditGate, QuditGeneralizedXGate, QuditGeneralizedZGate
 
 
 class QuquartDepolarizingChannel(QuditGate):

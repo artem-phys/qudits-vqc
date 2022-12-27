@@ -247,7 +247,7 @@ if __name__ == '__main__':
 
     print('Qudit Generalized Z Gate')
     circuit = cirq.Circuit(QuditGeneralizedZGate(dimension=d).on(qudits[0]))
-    param_resolver = cirq.ParamResolver({'alpha': 0.2, 'beta': 0.3})
+    resolved_circuit = cirq.resolve_parameters(circuit, param_resolver)
     print(resolved_circuit)
     print()
 
