@@ -56,11 +56,11 @@ class DoubleQuquartDepolarizingChannel(QuditGate):
     def _mixture_(self):
         ps = []
 
-        x_unitary = QuditGeneralizedXGate(dimension=self.d).get_unitary()
-        z_unitary = QuditGeneralizedZGate(dimension=self.d).get_unitary()
+        x_unitary = QuditGeneralizedXGate(dimension=self.d ** 2).get_unitary()
+        z_unitary = QuditGeneralizedZGate(dimension=self.d ** 2).get_unitary()
 
-        for alpha in range(self.d ** 4):
-            for beta in range(self.d ** 4):
+        for alpha in range(self.d ** 2):
+            for beta in range(self.d ** 2):
 
                 op = np.linalg.matrix_power(x_unitary, alpha) @ np.linalg.matrix_power(z_unitary, beta)
                 ps.append(op)
