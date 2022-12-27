@@ -1,61 +1,74 @@
 import numpy as np
 import cirq
 
-from qudit_gates import QuditGate, generalized_sigma
+from qudit_gates import QuditGate, generalized_sigma, QuditGeneralizedXGate, QuditGeneralizedZGate
 
 
 class QuquartDepolarizingChannel(QuditGate):
 
-    def __init__(self, p_matrix=None):
+    def __init__(self, p1=None):
         super().__init__(dimension=4, num_qubits=1)
 
         # Calculation of the parameter p based on average experimental error of single qudit gate
-        f1 = 0.99
-        self.p1 = (1 - f1) / (1 - 1 / self.d ** 2)
-
-        # Choi matrix initialization
-        if p_matrix is None:
-            self.p_matrix = self.p1 / (self.d ** 2) * np.ones((self.d, self.d))
+        if p1 is None:
+            f1 = 0.99
+            self.p1 = (1 - f1)
         else:
-            self.p_matrix = p_matrix
-        self.p_matrix[0, 0] += (1 - self.p1)  # identity probability
+            self.p1 = p1
+
+        self.mixture_probabilities = np.ones(self.d ** 2) * self.p1 / (self.d ** 2 - 1)
+        self.mixture_probabilities[0] = (1 - self.p1)  # identity probability
 
     def _mixture_(self):
+
+        x_unitary = QuditGeneralizedXGate(dimension=self.d).get_unitary()
+        z_unitary = QuditGeneralizedZGate(dimension=self.d).get_unitary()
+
         ps = []
-        for i in range(self.d):
-            for j in range(self.d):
-                op = np.kron(generalized_sigma(i, 0, 1, dimension=2), generalized_sigma(j, 0, 1, dimension=2))
+        for alpha in range(self.d):
+            for beta in range(self.d):
+                op = np.linalg.matrix_power(x_unitary, alpha) @ np.linalg.matrix_power(z_unitary, beta)
                 ps.append(op)
-        return tuple(zip(self.p_matrix.flatten(), ps))
+
+        return tuple(zip(self.mixture_probabilities, ps))
+
+    def get_mixture(self):
+        return self._mixture_()
 
     def _circuit_diagram_info_(self, args):
         return f"Φ(p1={self.p1:.3f})"
 
 
 class DoubleQuquartDepolarizingChannel(QuditGate):
-    def __init__(self, p_matrix=None):
+    def __init__(self, p2=None):
         super().__init__(dimension=4, num_qubits=2)
 
-        # Calculation of the parameter p2 based on average experimental error of two qudit gate
-        f2 = 0.96
-        self.p2 = (1 - f2) / (1 - 1 / (self.d ** 2) ** 2)
+        # Calculation of the parameter p based on average experimental error of single qudit gate
+        if p2 is None:
+            f2 = 0.96
+            self.p2 = (1 - f2)
+        else:
+            self.p2 = p2
 
-        # Choi matrix initialization
-        self.p_matrix = self.p2 / 256 * np.ones((16, 16)) if p_matrix is None else p_matrix
-        self.p_matrix[0, 0] += (1 - self.p2)  # identity probability
+        self.mixture_probabilities = np.ones(self.d ** 4) * self.p2 / (self.d ** 4 - 1)
+        self.mixture_probabilities[0] = (1 - self.p2)  # identity probability
 
     def _mixture_(self):
         ps = []
-        for i0 in range(self.d):
-            for i1 in range(self.d):
-                for i2 in range(self.d):
-                    for i3 in range(self.d):
-                        op = np.kron(np.kron(generalized_sigma(i0, 0, 1, dimension=2),
-                                             generalized_sigma(i1, 0, 1, dimension=2)),
-                                     np.kron(generalized_sigma(i2, 0, 1, dimension=2),
-                                             generalized_sigma(i3, 0, 1, dimension=2)))
-                        ps.append(op)
-        return tuple(zip(self.p_matrix.flatten(), ps))
+
+        x_unitary = QuditGeneralizedXGate(dimension=self.d).get_unitary()
+        z_unitary = QuditGeneralizedZGate(dimension=self.d).get_unitary()
+
+        for alpha in range(self.d ** 4):
+            for beta in range(self.d ** 4):
+
+                op = np.linalg.matrix_power(x_unitary, alpha) @ np.linalg.matrix_power(z_unitary, beta)
+                ps.append(op)
+
+        return tuple(zip(self.mixture_probabilities, ps))
+
+    def get_mixture(self):
+        return self._mixture_()
 
     def _circuit_diagram_info_(self, args):
         return f"ΦΦ(p2={self.p2:.3f})", f"ΦΦ(p2={self.p2:.3f})"

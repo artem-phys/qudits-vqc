@@ -115,6 +115,9 @@ class QuditGeneralizedXGate(QuditGate):
 
         return u
 
+    def get_unitary(self):
+        return self._unitary_()
+
     def _circuit_diagram_info_(self, args):
         self.symbol = 'Xgen'
         return self.symbol
@@ -131,6 +134,9 @@ class QuditGeneralizedZGate(QuditGate):
         w = np.exp(2 * np.pi * 1j / N)
         u = np.diag([w ** k for k in range(N)])
         return u
+
+    def get_unitary(self):
+        return self._unitary_()
 
     def _circuit_diagram_info_(self, args):
         self.symbol = 'Zgen'
