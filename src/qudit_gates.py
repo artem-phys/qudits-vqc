@@ -100,6 +100,23 @@ class QuditRGate(QuditGate):
         return f'{self.symbol}{str(self.l1).translate(SUB)}{str(self.l2).translate(SUP)}' + f'({nice_repr(self.theta)}, {nice_repr(self.phi)})'
 
 
+class QuditGeneralizedZGate(QuditGate):
+    """Generalized Z Gate"""
+
+    def __init__(self, dimension=4):
+        super().__init__(dimension=dimension)
+
+    def _unitary_(self):
+        N = self.d
+        w = np.exp(2 * np.pi * 1j / N)
+        u = np.diag([w ** k for k in range(N)])
+        return u
+
+    def _circuit_diagram_info_(self, args):
+        self.symbol = 'Zgen'
+        return self.symbol
+
+
 class QuditXXGate(QuditGate):
     """Two qudit rotation for two specified qudit levels: l1 and l2"""
 
@@ -196,6 +213,13 @@ if __name__ == '__main__':
 
     print('Qudit R Gate')
     circuit = cirq.Circuit(QuditRGate(0, 1, alpha, beta, dimension=d).on(qudits[0]))
+    param_resolver = cirq.ParamResolver({'alpha': 0.2, 'beta': 0.3})
+    resolved_circuit = cirq.resolve_parameters(circuit, param_resolver)
+    print(resolved_circuit)
+    print()
+
+    print('Qudit Generalized Z Gate')
+    circuit = cirq.Circuit(QuditGeneralizedZGate(dimension=d).on(qudits[0]))
     param_resolver = cirq.ParamResolver({'alpha': 0.2, 'beta': 0.3})
     resolved_circuit = cirq.resolve_parameters(circuit, param_resolver)
     print(resolved_circuit)
