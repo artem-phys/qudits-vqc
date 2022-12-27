@@ -1,4 +1,5 @@
-from reshape_parameters import *
+from qubit_variational_qc import *
+from qudit_variational_qc import *
 
 
 def ising_hamiltonian(B, n_qubits=4):
@@ -14,18 +15,18 @@ def ising_hamiltonian(B, n_qubits=4):
     return hamiltonian
 
 
-def objective_function(params, J, B, num_qubits, dimension, sv, with_noise=False):
+def objective_function(params, J, B, num_qids, dimension, sv, with_noise=False):
 
     if dimension == 2:
         tl, pl, tqtl = qubit_parameters_reshape(params)
-        vqe_circuit = qubit_variational_qc(tl, pl, tqtl, 1, num_qubits, measurement=False, with_noise=with_noise)
+        vqe_circuit = qubit_variational_qc(tl, pl, tqtl, 1, num_qids, measurement=False, with_noise=with_noise)
 
     elif dimension == 4:
         tl, pl, tqtl = qudit_parameters_reshape(params)
-        vqe_circuit = variational_qc(tl, pl, tqtl, 1, num_qudits, measurement=False, with_noise=with_noise)
+        vqe_circuit = variational_qc(tl, pl, tqtl, 1, num_qids, measurement=False, with_noise=with_noise)
 
     simulator = cirq.Simulator()
-    qubits = [cirq.LineQubit(i) for i in range(num_qubits)]
+    qubits = [cirq.LineQubit(i) for i in range(num_qids)]
 
     # Simulate
     sv = simulator.simulate(vqe_circuit, initial_state=sv).final_state_vector
